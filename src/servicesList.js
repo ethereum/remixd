@@ -1,3 +1,4 @@
 module.exports = {
-  sharedfolder: require('./services/sharedFolder')
+  sharedfolder: require('./services/sharedFolder'),
+  smtsolver: require('./services/smtSolver')
 }
