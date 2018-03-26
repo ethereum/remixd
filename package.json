@@ -6,7 +6,7 @@
   "bin" : { "remixd" : "./bin/remixd" },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/main.js"
+    "start": "node ./src/index.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "serve": "^6.3.1",
     "stdout": "0.0.3",
     "watch": "^1.0.2",
-    "web3": "ethereum/web3.js#1.0",
+    "web3": "^0.19.0",
     "websocket": "^1.0.24"
   }
 }
