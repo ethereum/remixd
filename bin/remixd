@@ -12,6 +12,7 @@ program
 .option('-s, --shared-folder <path>', 'Folder to share with Remix IDE')
 .option('-m, --mist', 'start mist')
 .option('-g, --geth', 'start geth')
+.option('--truffle', 'start truffle service')
 .option('-p, --dev-path <dev-path>', 'Folder used by mist/geth to start the development instance')
 .option('-f, --frontend <front-end>', 'Folder that should be served by remixd')
 .option('-p, --frontend-port <front-end-port>', 'Http port used by the frontend (default 8082)')
@@ -56,6 +57,11 @@ if (program.sharedFolder) {
 if (program.profiler) {
   var profilerRouter = new Router(65521, servicesList['profiler'])
   killCallBack.push(profilerRouter.start())
+}
+
+if (program.truffle) {
+  var truffleRouter = new Router(65522, servicesList['truffle'])
+  killCallBack.push(truffleRouter.start())
 }
 
 // kill
