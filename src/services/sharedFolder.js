@@ -2,6 +2,7 @@ var utils = require('../utils')
 var isbinaryfile = require('isbinaryfile')
 var fs = require('fs-extra')
 var chokidar = require('chokidar')
+var { exec } = require('child_process')
 
 module.exports = {
   trackDownStreamUpdate: {},
@@ -16,6 +17,34 @@ module.exports = {
     this.sharedFolder = sharedFolder
   },
 
+  init: function (args, cb) {
+    try {
+      exec('truffle init', (err, stdout, stderr) => {
+        if (err) {
+          console.error(`exec error: ${err}`)
+          return;
+        } 
+        console.log(`truffle init output: ${stdout}`)
+      })
+    } catch (e) {
+      cb(e.message)
+    }
+  }, 
+
+  test: function (args, cb) {
+    try {
+      exec('truffle test', (err, stdout, stderr) => {
+        if (err) {
+          console.error(`exec error: ${err}`)
+          return;
+        } 
+        console.log(`truffle test output: ${stdout}`)
+        fs.writeFile('./test_output', stdout)
+      })
+    } catch (e) {
+      cb(e.message)
+    }
+  },
   list: function (args, cb) {
     try {
       cb(null, utils.walkSync(this.sharedFolder, {}, this.sharedFolder))
