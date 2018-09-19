@@ -2,7 +2,7 @@ var utils = require('../utils')
 var isbinaryfile = require('isbinaryfile')
 var fs = require('fs-extra')
 var chokidar = require('chokidar')
-var { exec } = require('child_process')
+const { exec } = require('child_process')
 
 module.exports = {
   trackDownStreamUpdate: {},
@@ -22,9 +22,11 @@ module.exports = {
       exec('truffle init', (err, stdout, stderr) => {
         if (err) {
           console.error(`exec error: ${err}`)
-          return;
-        } 
-        console.log(`truffle init output: ${stdout}`)
+          cb(err)
+        } else { 
+          console.log(`truffle init output: ${stdout}`)
+          cb(null, stdout)
+        }
       })
     } catch (e) {
       cb(e.message)
@@ -36,15 +38,17 @@ module.exports = {
       exec('truffle test', (err, stdout, stderr) => {
         if (err) {
           console.error(`exec error: ${err}`)
-          return;
-        } 
-        console.log(`truffle test output: ${stdout}`)
-        fs.writeFile('./test_output', stdout)
+          cb(err)
+        } else { 
+          console.log(`truffle test output: ${stdout}`)
+          cb(null, stdout)
+        }
       })
     } catch (e) {
       cb(e.message)
     }
   },
+
   list: function (args, cb) {
     try {
       cb(null, utils.walkSync(this.sharedFolder, {}, this.sharedFolder))
