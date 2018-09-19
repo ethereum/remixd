@@ -2,6 +2,7 @@ var utils = require('../utils')
 var isbinaryfile = require('isbinaryfile')
 var fs = require('fs-extra')
 var chokidar = require('chokidar')
+var path = require('path')
 const { exec } = require('child_process')
 
 module.exports = {
@@ -19,12 +20,13 @@ module.exports = {
 
   init: function (args, cb) {
     try {
-      exec('truffle init', (err, stdout, stderr) => {
+      var _path = getRemixdPath() + 'node_modules/truffle/build/cli.bundled.js' 
+      exec(_path + ' init', (err, stdout, stderr) => {
         if (err) {
-          console.error(`exec error: ${err}`)
+          console.error(`${err}`)
           cb(err)
         } else { 
-          console.log(`truffle init output: ${stdout}`)
+          console.log(`${stdout}`)
           cb(null, stdout)
         }
       })
@@ -35,12 +37,13 @@ module.exports = {
 
   test: function (args, cb) {
     try {
-      exec('truffle test', (err, stdout, stderr) => {
+      var _path = getRemixdPath() + 'node_modules/truffle/build/cli.bundled.js' 
+      exec(_path + ' test', (err, stdout, stderr) => {
         if (err) {
-          console.error(`exec error: ${err}`)
+          console.error(`${err}`)
           cb(err)
         } else { 
-          console.log(`truffle test output: ${stdout}`)
+          console.log(`${stdout}`)
           cb(null, stdout)
         }
       })
@@ -163,6 +166,20 @@ module.exports = {
       if (this.websocket.connection) this.websocket.send(message('removed', { path: utils.relativePath(f, this.sharedFolder), isFolder: true }))
     })
   }
+}
+
+function getRemixdPath () {
+  var _path = ''
+  var arr = path.resolve(__dirname).split('/')
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i] === 'remixd') {
+      _path += arr[i] + '/'
+      i = arr.length 
+    } else {
+      _path += arr[i] + '/'
+    }
+  }
+  return _path
 }
 
 function isRealPath (path, cb) {

@@ -33,6 +33,7 @@
     "fs-extra": "^3.0.1",
     "isbinaryfile": "^3.0.2",
     "lerna": "^2.9.0",
+    "path": "^0.12.7",
     "serve": "^6.5.8",
     "stdout": "0.0.3",
     "truffle": "^4.1.14",
