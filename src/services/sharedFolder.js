@@ -2,6 +2,22 @@ var utils = require('../utils')
 var isbinaryfile = require('isbinaryfile')
 var fs = require('fs-extra')
 var chokidar = require('chokidar')
+var pathHelper = require('path');
+
+function workaroundTruffleImports (data, sharedFolder, path, moduleName){
+  data = data.toString().replaceAll(
+    "\""+moduleName,
+    "\""+pathHelper.relative(
+    pathHelper.dirname(path),
+    sharedFolder
+    ).replace(/\\/g,"/")+"/node_modules/"+moduleName);
+  return data;
+}
+
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.replace(new RegExp(search, 'g'), replacement);
+};
 
 module.exports = {
   trackDownStreamUpdate: {},
@@ -50,6 +66,18 @@ module.exports = {
         cb(null, {content: '<binary content not displayed>', readonly: true})
       } else {
         fs.readFile(path, 'utf8', (error, data) => {
+          let dir = this.sharedFolder+"/node_modules/";
+          var files = fs.readdirSync(dir)
+          let listOfModules = [];
+          files.forEach(function (file) {
+            var subElement = pathHelper.join(dir, file)
+            if (fs.statSync(subElement).isDirectory()) {
+              listOfModules.push(pathHelper.basename(subElement));
+            }
+          })
+          listOfModules.forEach((moduleName) => {
+            data = workaroundTruffleImports(data, this.sharedFolder, path, moduleName);
+          });
           if (error) console.log(error)
           cb(error, {content: data, readonly: false})
         })
