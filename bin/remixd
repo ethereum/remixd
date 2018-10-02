@@ -9,9 +9,12 @@ var fs = require('fs-extra')
 program
 .usage('-s <shared folder>')
 .description('Provide a two ways connection between the local computer and Remix IDE')
+.option('--remix-ide  <url>', 'URL of remix instance allowed to connect to this web sockect connection')
 .option('-s, --shared-folder <path>', 'Folder to share with Remix IDE')
+.option('--read-only', 'Treat shared folder as read-only (experimental)')
 .option('-m, --mist', 'start mist')
 .option('-g, --geth', 'start geth')
+.option('--truffle', 'start truffle service')
 .option('-p, --dev-path <dev-path>', 'Folder used by mist/geth to start the development instance')
 .option('-f, --frontend <front-end>', 'Folder that should be served by remixd')
 .option('-p, --frontend-port <front-end-port>', 'Http port used by the frontend (default 8082)')
@@ -19,11 +22,16 @@ program
 .option('-r, --rpc <cors-domains>', 'start rpc server. Values are CORS domain')
 .option('-rp, --rpc-port', 'rpc server port (default 8545)')
 .option('--profiler', 'start profiler service')
-.parse(process.argv)
-console.log('example: --dev-path /home/devchains/chain1 --mist --geth --frontend /home/frontend --frontend-port 8084 --auto-mine')
-program.outputHelp()
+.on('--help', function(){
+  console.log('\nExample:\n\n    remixd --dev-path /home/devchains/chain1 --mist --geth --frontend /home/frontend --frontend-port 8084 --auto-mine')
+}).parse(process.argv)
 
 var killCallBack = []
+
+if (!program.remixIde) {
+  return console.log('\x1b[31m%s\x1b[0m', '[ERR] URL Remix IDE instance has to be provided.')
+}
+console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + program.remixIde + ' to connect to that instance')
 
 if (program.devPath) {
   if (fs.existsSync(program.devPath)) {
@@ -45,10 +53,10 @@ if (program.frontend) {
 if (program.sharedFolder) {
   console.log('\x1b[33m%s\x1b[0m', '[WARN] Any application that runs on your computer can potentially read from and write to all files in the directory.')
   console.log('\x1b[33m%s\x1b[0m', '[WARN] Symbolinc links are not forwarded to Remix IDE\n')
-  var sharedFolderrouter = new Router(65520, servicesList['sharedfolder'], (webSocket) => {
+  var sharedFolderrouter = new Router(65520, servicesList['sharedfolder'], { remixIdeUrl: program.remixIde }, (webSocket) => {
     servicesList['sharedfolder'].setWebSocket(webSocket)
     servicesList['sharedfolder'].setupNotifications(program.sharedFolder)
-    servicesList['sharedfolder'].sharedFolder(program.sharedFolder)
+    servicesList['sharedfolder'].sharedFolder(program.sharedFolder, program.readOnly || false)
   })
   killCallBack.push(sharedFolderrouter.start())
 }
@@ -56,6 +64,11 @@ if (program.sharedFolder) {
 if (program.profiler) {
   var profilerRouter = new Router(65521, servicesList['profiler'])
   killCallBack.push(profilerRouter.start())
+}
+
+if (program.truffle) {
+  var truffleRouter = new Router(65522, servicesList['truffle'])
+  killCallBack.push(truffleRouter.start())
 }
 
 // kill

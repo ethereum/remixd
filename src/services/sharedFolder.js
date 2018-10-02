@@ -2,8 +2,6 @@ var utils = require('../utils')
 var isbinaryfile = require('isbinaryfile')
 var fs = require('fs-extra')
 var chokidar = require('chokidar')
-var path = require('path')
-const { exec } = require('child_process')
 
 module.exports = {
   trackDownStreamUpdate: {},
@@ -14,42 +12,9 @@ module.exports = {
     this.websocket = websocket
   },
 
-  sharedFolder: function (sharedFolder) {
+  sharedFolder: function (sharedFolder, readOnly) {
     this.sharedFolder = sharedFolder
-  },
-
-  init: function (args, cb) {
-    try {
-      var _path = getRemixdPath() + 'node_modules/truffle/build/cli.bundled.js' 
-      exec(_path + ' init', (err, stdout, stderr) => {
-        if (err) {
-          console.error(`${err}`)
-          cb(err)
-        } else { 
-          console.log(`${stdout}`)
-          cb(null, stdout)
-        }
-      })
-    } catch (e) {
-      cb(e.message)
-    }
-  }, 
-
-  test: function (args, cb) {
-    try {
-      var _path = getRemixdPath() + 'node_modules/truffle/build/cli.bundled.js' 
-      exec(_path + ' test', (err, stdout, stderr) => {
-        if (err) {
-          console.error(`${err}`)
-          cb(err)
-        } else { 
-          console.log(`${stdout}`)
-          cb(null, stdout)
-        }
-      })
-    } catch (e) {
-      cb(e.message)
-    }
+    this.readOnly = readOnly
   },
 
   list: function (args, cb) {
@@ -71,6 +36,10 @@ module.exports = {
     } catch (e) {
       cb(e.message)
     }
+  },
+
+  folderIsReadOnly: function (args, cb) {
+    return cb(null, this.readOnly)
   },
 
   get: function (args, cb) {
@@ -98,6 +67,7 @@ module.exports = {
   },
 
   set: function (args, cb) {
+    if (this.readOnly) return cb('Cannot write file: read-only mode selected')
     var path = utils.absolutePath(args.path, this.sharedFolder)
     if (fs.existsSync(path) && !isRealPath(path, cb)) return
     if (args.content === 'undefined') { // no !!!!!
@@ -112,6 +82,7 @@ module.exports = {
   },
 
   rename: function (args, cb) {
+    if (this.readOnly) return cb('Cannot rename file: read-only mode selected')
     var oldpath = utils.absolutePath(args.oldPath, this.sharedFolder)
     if (!fs.existsSync(oldpath)) {
       return cb('File not found ' + oldpath)
@@ -125,6 +96,7 @@ module.exports = {
   },
 
   remove: function (args, cb) {
+    if (this.readOnly) return cb('Cannot remove file: read-only mode selected')
     var path = utils.absolutePath(args.path, this.sharedFolder)
     if (!fs.existsSync(path)) {
       return cb('File not found ' + path)
@@ -166,20 +138,6 @@ module.exports = {
       if (this.websocket.connection) this.websocket.send(message('removed', { path: utils.relativePath(f, this.sharedFolder), isFolder: true }))
     })
   }
-}
-
-function getRemixdPath () {
-  var _path = ''
-  var arr = path.resolve(__dirname).split('/')
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] === 'remixd') {
-      _path += arr[i] + '/'
-      i = arr.length 
-    } else {
-      _path += arr[i] + '/'
-    }
-  }
-  return _path
 }
 
 function isRealPath (path, cb) {
