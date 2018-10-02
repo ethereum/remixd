@@ -34,7 +34,7 @@
     "isbinaryfile": "^3.0.2",
     "lerna": "^2.9.0",
     "path": "^0.12.7",
-    "serve": "^6.5.8",
+    "serve": "7.0.0",
     "stdout": "0.0.3",
     "truffle": "^4.1.14",
     "watch": "^1.0.2",
