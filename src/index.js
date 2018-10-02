@@ -7,7 +7,8 @@ module.exports = {
     startMistGeth: require('./services/startMistGeth'),
     startFrontend: require('./services/startFrontend'),
     autoMine: require('./services/autoMine'),
-    sharedFolder: require('./services/sharedFolder')
-    truffle: require('./services/truffle')
+    sharedFolder: require('./services/sharedFolder'),
+    truffle: require('./services/truffle'),
+    npm: require('./services/npm')
   }
 }
