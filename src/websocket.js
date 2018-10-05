@@ -69,8 +69,6 @@ class WebSocket {
 }
 
 function originIsAllowed (origin, self) {
-  // FIXME - For some reason this prevents the truffle service from working properly
-  //  return origin === self.opt.remixIdeUrl
   return true
 }
 
