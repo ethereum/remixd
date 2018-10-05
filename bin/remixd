@@ -72,11 +72,6 @@ if (program.truffle) {
   killCallBack.push(truffleRouter.start())
 }
 
-if (program.npm) {
-  var truffleRouter = new Router(65523, servicesList['npm'])
-  killCallBack.push(truffleRouter.start())
-}
-
 // kill
 function kill () {
   for (var k in killCallBack) {

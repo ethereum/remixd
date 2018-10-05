@@ -8,7 +8,6 @@ module.exports = {
     startFrontend: require('./services/startFrontend'),
     autoMine: require('./services/autoMine'),
     sharedFolder: require('./services/sharedFolder'),
-    truffle: require('./services/truffle'),
-    npm: require('./services/npm')
+    truffle: require('./services/truffle')
   }
 }
