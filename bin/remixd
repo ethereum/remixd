@@ -68,8 +68,14 @@ if (program.profiler) {
 }
 
 if (program.truffle) {
-  var truffleRouter = new Router(65522, servicesList['truffle'])
-  killCallBack.push(truffleRouter.start())
+  if (program.sharedFolder) {
+    var truffleRouter = new Router(65522, servicesList['truffle'], {}, (websocket) => {
+      servicesList['truffle'].setSharedFolder(program.sharedFolder)
+    })
+    killCallBack.push(truffleRouter.start())
+  } else {
+    console.log('\x1b[31m%s\x1b[0m', '[ERR] can\'t start truffle service. shared folder need to be provided.')
+  }
 }
 
 // kill
