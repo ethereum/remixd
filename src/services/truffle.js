@@ -3,6 +3,10 @@ const { exec } = require('child_process')
 
 module.exports = {
 
+  setSharedFolder: function (path) {
+    this.path = path
+  },
+
   /**
    * FIXME - This can be made more general. It would be useful to allow the directory to initialize to be specified
    * Initializes a truffle repository within the current working directory of the Remixd server. 
@@ -12,7 +16,7 @@ module.exports = {
   init: function (args, cb) {
     try {
       var path = getRemixdPath() + 'node_modules/truffle/build/cli.bundled.js' 
-      exec(path + ' init', (err, stdout, stderr) => {
+      exec(path + ' init', { cwd: this.path }, (err, stdout, stderr) => {
         if (err) {
           console.error(`${err}`)
           cb(err)
@@ -35,7 +39,7 @@ module.exports = {
   test: function (args, cb) {
     try {
       var path = getRemixdPath() + 'node_modules/truffle/build/cli.bundled.js' 
-      exec(path + ' test', (err, stdout, stderr) => {
+      exec(path + ' test', { cwd: this.path }, (err, stdout, stderr) => {
         if (err) {
           console.error(`${err}`)
           cb(err)
@@ -57,7 +61,7 @@ module.exports = {
    */ 
   getEnv: function (args, cb) {
     try {
-      var config = fs.readFile(process.cwd() + 'truffle-config.js')
+      var config = fs.readFile(this.path + '/truffle-config.js')
       cb(null, config)
     } catch (e) {
       cb(e.message)
