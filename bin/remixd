@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+var semver = require('semver')
+var latestVersion = require('latest-version')
 var Router = require('../src/router')
 var servicesList = require('../src/servicesList')
 var program = require('commander')
@@ -27,49 +29,68 @@ program
   console.log('\nExample:\n\n    remixd --dev-path /home/devchains/chain1 --mist --geth --frontend /home/frontend --frontend-port 8084 --auto-mine')
 }).parse(process.argv)
 
-var killCallBack = []
+var killCallBack = start()
 
-if (program.vyper) {
-  console.log('starting vyper compiler')
-  vyper()
-}
+async function start () {
 
-if (!program.remixIde) {
-  return console.log('\x1b[31m%s\x1b[0m', '[ERR] URL Remix IDE instance has to be provided.')
-}
-console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + program.remixIde + ' to connect to that instance')
+  await warnLatestVersion()
 
-if (program.devPath) {
-  if (fs.existsSync(program.devPath)) {
-    killCallBack.push(startmistGeth(program.devPath, program.mist, program.geth, program.autoMine, program.rpc, program.rpcPort))
-  } else {
-    console.log('\x1b[31m%s\x1b[0m', '[ERR] can\'t start mist/geth. ' + program.devPath + ' does not exist')
+  var killCallBack = []
+
+  if (program.vyper) {
+    console.log('starting vyper compiler')
+    vyper()
   }
-}
 
-if (program.frontend) {
-  if (!program.frontendPort) program.frontendPort = 8082
-  if (fs.existsSync(program.frontend)) {
-    killCallBack.push(startFrontend(program.frontend, program.frontendPort))
-  } else {
-    console.log('\x1b[31m%s\x1b[0m', '[ERR] can\'t start frontend. ' + program.frontend + ' does not exist')
+  if (!program.remixIde) {
+    return console.log('\x1b[31m%s\x1b[0m', '[ERR] URL Remix IDE instance has to be provided.')
   }
+  console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + program.remixIde + ' to connect to that instance')
+
+  if (program.devPath) {
+    if (fs.existsSync(program.devPath)) {
+      killCallBack.push(startmistGeth(program.devPath, program.mist, program.geth, program.autoMine, program.rpc, program.rpcPort))
+    } else {
+      console.log('\x1b[31m%s\x1b[0m', '[ERR] can\'t start mist/geth. ' + program.devPath + ' does not exist')
+    }
+  }
+
+  if (program.frontend) {
+    if (!program.frontendPort) program.frontendPort = 8082
+    if (fs.existsSync(program.frontend)) {
+      killCallBack.push(startFrontend(program.frontend, program.frontendPort))
+    } else {
+      console.log('\x1b[31m%s\x1b[0m', '[ERR] can\'t start frontend. ' + program.frontend + ' does not exist')
+    }
+  }
+
+  if (program.sharedFolder) {
+    console.log('\x1b[33m%s\x1b[0m', '[WARN] Any application that runs on your computer can potentially read from and write to all files in the directory.')
+    console.log('\x1b[33m%s\x1b[0m', '[WARN] Symbolinc links are not forwarded to Remix IDE\n')
+    var sharedFolderrouter = new Router(65520, servicesList['sharedfolder'], { remixIdeUrl: program.remixIde }, (webSocket) => {
+      servicesList['sharedfolder'].setWebSocket(webSocket)
+      servicesList['sharedfolder'].setupNotifications(program.sharedFolder)
+      servicesList['sharedfolder'].sharedFolder(program.sharedFolder, program.readOnly || false)
+    })
+    killCallBack.push(sharedFolderrouter.start())
+  }
+
+  if (program.profiler) {
+    var profilerRouter = new Router(65521, servicesList['profiler'])
+    killCallBack.push(profilerRouter.start())
+  }
+  return killCallBack
 }
 
-if (program.sharedFolder) {
-  console.log('\x1b[33m%s\x1b[0m', '[WARN] Any application that runs on your computer can potentially read from and write to all files in the directory.')
-  console.log('\x1b[33m%s\x1b[0m', '[WARN] Symbolinc links are not forwarded to Remix IDE\n')
-  var sharedFolderrouter = new Router(65520, servicesList['sharedfolder'], { remixIdeUrl: program.remixIde }, (webSocket) => {
-    servicesList['sharedfolder'].setWebSocket(webSocket)
-    servicesList['sharedfolder'].setupNotifications(program.sharedFolder)
-    servicesList['sharedfolder'].sharedFolder(program.sharedFolder, program.readOnly || false)
-  })
-  killCallBack.push(sharedFolderrouter.start())
-}
-
-if (program.profiler) {
-  var profilerRouter = new Router(65521, servicesList['profiler'])
-  killCallBack.push(profilerRouter.start())
+async function warnLatestVersion () {
+  let latest = await latestVersion('remixd')
+  var pjson = require('../package.json');
+  if (semver.eq(latest, pjson.version)) {
+    console.log('\x1b[32m%s\x1b[0m', `[INFO] you are using the latest update ${latest}`)
+  } else if (semver.gt(latest, pjson.version)) { 
+    console.log('\x1b[33m%s\x1b[0m', `[WARN] latest update is ${latest}, you are using ${pjson.version} please update:`)
+    console.log('\x1b[33m%s\x1b[0m', `[WARN] npm install remixd -g`)
+  }
 }
 
 // kill
