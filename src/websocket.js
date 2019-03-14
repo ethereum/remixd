@@ -26,6 +26,7 @@ class WebSocket {
     })
 
     this.wsServer.on('request', (request) => {
+      console.log('request', request)
       if (!originIsAllowed(request.origin, this)) {
         request.reject()
         console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.')
@@ -41,6 +42,7 @@ class WebSocket {
       this.connection = request.accept('echo-protocol', request.origin)
       console.log((new Date()) + ' Connection accepted.')
       this.connection.on('message', (message) => {
+        console.log('message', message)
         if (message.type === 'utf8') {
           callback(JSON.parse(message.utf8Data))
         }
