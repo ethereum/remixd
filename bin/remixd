@@ -1,46 +1,48 @@
 #!/usr/bin/env node
-var Router = require('../src/router')
-var servicesList = require('../src/servicesList')
+var { Router, services } = require('../src');
 var program = require('commander')
 
+var enabledServices = {}
+const registerService = (name, service) => enabledServices[name] = service
+
 program
-.usage('-s <shared folder>')
+.usage('[options]')
 .description('Provide a two-way connection between the local computer and Remix IDE')
-.option('--remix-ide  <url>', 'URL of remix instance allowed to connect to this web sockect connection')
+.option('--remix-ide  <url>', 'URL of remix instance allowed to connect to this web socket connection', 'https://remix.ethereum.org')
 .option('-s, --shared-folder <path>', 'Folder to share with Remix IDE')
 .option('--read-only', 'Treat shared folder as read-only (experimental)')
-.on('--help', function(){
-  console.log('\nExample:\n\n    remixd -s ./ --remix-ide http://localhost:8080')
+.option('--forward-commands', 'Enables CLI commands forwarding')
+.on('--help', function() {
+  console.log('\nExample:\n\n    remixd -s ./ --remix-ide http://localhost:8080\n')
 }).parse(process.argv)
 
-var killCallBack = []
-
-if (!program.remixIde) {
-  return console.log('\x1b[31m%s\x1b[0m', '[ERR] URL Remix IDE instance has to be provided.')
-}
-console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + program.remixIde + ' to connect to that instance')
+console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + program.remixIde + ' to connect to this instance')
 
 if (program.sharedFolder) {
   console.log('\x1b[33m%s\x1b[0m', '[WARN] Any application that runs on your computer can potentially read from and write to all files in the directory.')
-  console.log('\x1b[33m%s\x1b[0m', '[WARN] Symbolinc links are not forwarded to Remix IDE\n')
-  var sharedFolderrouter = new Router(65520, servicesList['sharedfolder'], { remixIdeUrl: program.remixIde }, (webSocket) => {
-    servicesList['sharedfolder'].setWebSocket(webSocket)
-    servicesList['sharedfolder'].setupNotifications(program.sharedFolder)
-    servicesList['sharedfolder'].sharedFolder(program.sharedFolder, program.readOnly || false)
-  })
-  killCallBack.push(sharedFolderrouter.start())
+  console.log('\x1b[33m%s\x1b[0m', '[WARN] Symbolic links are not forwarded to Remix IDE\n')
+  var sharedFolderService = services['sharedfolder'];
+  sharedFolderService.sharedFolder(program.sharedFolder, program.readOnly || false);
+  registerService('sharedfolder', sharedFolderService);
 }
 
-// kill
-function kill () {
-  for (var k in killCallBack) {
-    try {
-      killCallBack[k]()
-    } catch (e) {
-      console.log(e)
-    }
+if (program.forwardCommands) {
+  if (!program.sharedFolder) {
+    console.log('Could not forward commands without specified shared folder (use --shared-folder <path> option)');
+    return;
   }
+  console.log('\x1b[33m%s\x1b[0m', '[WARN] You have enabled CLI commands forwarding. Use at your own risk.')
+  var commandForwarderService = services['commandforwarder'];
+  commandForwarderService.workingDirectory(program.sharedFolder);
+  registerService('commandforwarder', commandForwarderService);
 }
-process.on('SIGINT', kill) // catch ctrl-c
-process.on('SIGTERM', kill) // catch kill
-process.on('exit', kill)
+
+var router = new Router(65520, enabledServices, { remixIdeUrl: program.remixIde });
+var cb = router.start()
+
+process.on('SIGINT', function () {
+  cb();
+  process.exit();
+});
+process.on('SIGTERM', cb)
+process.on('exit', cb)

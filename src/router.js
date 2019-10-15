@@ -1,19 +1,21 @@
 var Websocket = require('./websocket')
 
 class Router {
-  constructor (port, service, opt, initCallback) {
+  constructor (port, services, opt) {
     this.opt = opt
     this.port = port
-    this.service = service
-    this.initCallback = initCallback
+    this.services = services
   }
-  start () {
+
+  start() {
     var websocket = new Websocket(this.port, this.opt)
     this.websocket = websocket
     this.websocket.start((message) => {
       this.call(message.id, message.service, message.fn, message.args)
     })
-    if (this.initCallback) this.initCallback(this.websocket)
+    Object.keys(this.services).forEach(key => {
+      this.services[key].init(this.websocket)
+    })
     return function () {
       if (websocket) {
         websocket.close()
@@ -21,9 +23,10 @@ class Router {
     }
   }
 
-  call (callid, name, fn, args) {
+  call(callid, name, fn, args) {
     try {
-      this.service[fn](args, (error, data) => {
+      var service = this.services[name];
+      service[fn](args, (error, data) => {
         var response = {
           id: callid,
           type: 'reply',
@@ -34,9 +37,9 @@ class Router {
         this.websocket.send(JSON.stringify(response))
       })
     } catch (e) {
-      var msg = 'Unexpected Error ' + e.message
       console.log('\x1b[31m%s\x1b[0m', '[ERR] ' + msg)
       if (this.websocket) {
+        const msg = 'Unexpected error: ' + e.message
         this.websocket.send(JSON.stringify({
           id: callid,
           type: 'reply',

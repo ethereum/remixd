@@ -9,7 +9,7 @@ class WebSocket {
     this.opt = opt
   }
 
-  start (callback) {
+  start(callback) {
     this.server = http.createServer(function (request, response) {
       console.log((new Date()) + ' Received request for ' + request.url)
       response.writeHead(404)
@@ -34,7 +34,7 @@ class WebSocket {
         return
       }
       if (this.connection) {
-        console.log('closing previous connection')
+        console.log((new Date()) + ' Closing previous connection')
         this.wsServer.closeAllConnections()
         this.connection = null
         return
@@ -48,17 +48,17 @@ class WebSocket {
         }
       })
       this.connection.on('close', (reasonCode, description) => {
-        console.log((new Date()) + ' Remix ' + this.connection.remoteAddress + ' disconnected.')
+        console.log((new Date()) + ` Remix disconnected (${reasonCode} ${description})`)
         this.connection = null
       })
     })
   }
 
-  send (data) {
+  send(data) {
     this.connection.sendUTF(data)
   }
 
-  close () {
+  close() {
     if (this.connection) {
       this.connection.close()
       this.connection = null
@@ -70,7 +70,7 @@ class WebSocket {
   }
 }
 
-function originIsAllowed (origin, self) {
+function originIsAllowed(origin, self) {
   return origin === self.opt.remixIdeUrl
 }
 
