@@ -37,9 +37,9 @@ class Router {
         this.websocket.send(JSON.stringify(response))
       })
     } catch (e) {
-      console.log('\x1b[31m%s\x1b[0m', '[ERR] ' + msg)
       if (this.websocket) {
         const msg = 'Unexpected error: ' + e.message
+        console.log('\x1b[31m%s\x1b[0m', '[ERR] ' + msg)
         this.websocket.send(JSON.stringify({
           id: callid,
           type: 'reply',
