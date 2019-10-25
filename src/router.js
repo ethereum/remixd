@@ -1,4 +1,4 @@
-var Websocket = require('./websocket')
+let Websocket = require('./websocket');
 
 class Router {
   constructor (port, services, opt) {
@@ -23,6 +23,7 @@ class Router {
     }
   }
 
+  /*
   call(callid, name, fn, args) {
     try {
       var service = this.services[name];
@@ -49,6 +50,7 @@ class Router {
       }
     }
   }
+  */
 }
 
 module.exports = Router
