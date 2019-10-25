@@ -1,17 +1,12 @@
-class UnsuportedCommand extends Error {
+class UnsuportedCommandError extends Error {
     constructor(message) {
         super();
         this.message = message;
         this.code = 404;
-        this.type = "UnsuportedCommand";
+        this.type = "UnsupportedCommandError";
     }
 }
 
-function ErrorHandler(err) {
-    return "Error";
-}
-
 module.exports = {
-    ErrorHandler,
-    UnsuportedCommand
+    UnsuportedCommandError
 }
