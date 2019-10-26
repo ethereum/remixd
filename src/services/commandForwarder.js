@@ -1,15 +1,15 @@
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
 module.exports = {
     forward: function(args, callback) {
-        const options = { cwd: process.env.SHARED_FOLDER };
+        const options = { cwd: process.env.SHARED_FOLDER, shell: true };
         const { cmd } = args;
-        exec(cmd, options, (err, stdout, stderr) => {
-            if (err) {
-                callback(`Could not execute command '${cmd}': ${err}`);
-                return;
-            }
-            callback(null, { cmd, stdout, stderr });
+        const child = spawn(cmd, options);
+        child.stdout.on('data', (buffer) => {
+            callback(null, { chunk: `${buffer}` });
         });
+        child.stderr.on('data', (buffer) => {
+            callback(`stderr: ${buffer}`);
+        })
     }
 }
