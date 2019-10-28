@@ -1,6 +1,11 @@
 const { spawn } = require('child_process');
 
 module.exports = {
+
+    validateCommand(args){
+        //TODO
+    },
+
     forward: function(args, callback) {
         const options = { cwd: process.env.SHARED_FOLDER, shell: true };
         const { cmd } = args;
@@ -12,4 +17,4 @@ module.exports = {
             callback(`stderr: ${buffer}`);
         })
     }
-}
+};
