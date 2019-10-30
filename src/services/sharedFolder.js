@@ -1,7 +1,7 @@
-var utils = require('../utils')
-var isbinaryfile = require('isbinaryfile')
-var fs = require('fs-extra')
-var chokidar = require('chokidar')
+const utils = require('../utils');
+const isbinaryfile = require('isbinaryfile');
+const fs = require('fs-extra');
+const chokidar = require('chokidar');
 
 module.exports = {
   trackDownStreamUpdate: {},

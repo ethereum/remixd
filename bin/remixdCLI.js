@@ -7,12 +7,12 @@ const cors = require('cors');
 //const io = require('socket.io')(server)
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const serviceRouter = require('./serviceRouter');
+
 
 // Middleware
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
-app.use(cors({origin: true}))
+app.use(cors({origin: true}));
 app.options('*', cors());
 
 //Commander part
@@ -25,20 +25,17 @@ program
     .option('-s, --shared-folder <path>', 'Folder to share with Remix IDE')
     .option('--read-only', 'Treat shared folder as read-only (experimental)')
     .option('--forward-commands', 'Enables CLI commands forwarding')
-    .option('--env-file', 'Loads env from env file on path')
     .on('--help', function () {
         console.log('\nExample:\n\n    remixd -s ./ --remix-ide http://localhost:8080\n')
     }).parse(process.argv)
 
 console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + program.remixIde + ' to connect to this instance')
 
-if (program.envFile) {
-    let options = {};
-    options.path = path.resolve(process.cwd(), program.envFile);
-    dotenv.config(options);
-}
+//TODO:
+const remixDClient = require('../src/remixDClient');
 
-process.env.SERVICES = serviceRouter;
+process.env.PERMISSIONS = ["READ", "WRITE"];
+process.env.CLIENT = remixDClient;
 if (program.remixIde) {
     process.env.URL = program.remixIde;
 }
@@ -56,6 +53,7 @@ app.use((req, res, next) => {
     return next();
 });
 
+//This needs to be moved into routing part which will be @remixws-plugin
 app.get('/', (req, res) => {
     console.log("Loaded");
 });
@@ -66,8 +64,7 @@ app.ws('/', (socket, req) => {
     socket.on('message', (message) => {
         try {
             let data = JSON.parse(message);
-
-            serviceRouter.call(data, (result) => {
+            remixDClient.call(data, (result) => {
                 console.log(JSON.stringify(result));
                 socket.send(JSON.stringify(result));
             });
@@ -80,7 +77,6 @@ app.ws('/', (socket, req) => {
         console.log('User disconnected');
     });
 });
-
 
 const port = process.env.BACKEND_PORT || 65520;
 app.listen(port, () => {
