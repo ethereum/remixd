@@ -23,7 +23,7 @@ class RemixDClient {
     if (this.isAuthorized(this.currentRequest)) {
       this.git(...commands); // managed by the git service.
     }
-     */
+    */
     validatePermissions(permissions) {
         if(permissions.length === 0){
             return;
