@@ -12,8 +12,9 @@ app.use(bodyParser.json());
 app.use(cors({origin: true}));
 app.options('*', cors());
 
-let options = {};
-options.path = path.resolve(process.cwd(), '.env');
+const options = {
+    path : path.resolve(process.cwd(), '.env')
+};
 dotenv.config(options);
 
 const remixDClient = require('../src/remixDClient');

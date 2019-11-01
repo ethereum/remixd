@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-var { Router, services } = require('../src');
-var program = require('commander')
+const { Router, services } = require('../src');
+const program = require('commander')
 
-var enabledServices = {}
+let enabledServices = {}
 const registerService = (name, service) => enabledServices[name] = service
 
 program
