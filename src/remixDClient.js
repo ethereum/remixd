@@ -15,24 +15,15 @@ class RemixDClient {
         this.services.push(service);
     }
 
-    //Remix sends permissions that user has accepted on frontend
-    //For example commandForwarder needs both READ and WRITE permission (list of permission need to be defined)
-    //This is possible implementation of isAuthorized
-    /*
-    git(...commands: string[]) {
-    if (this.isAuthorized(this.currentRequest)) {
-      this.git(...commands); // managed by the git service.
-    }
-    */
     validatePermissions(permissions) {
-        if(permissions.length === 0){
+        if (permissions.length === 0) {
             return;
         }
 
         let permissionsEnabled = process.env.PERMISSIONS.split(',');
 
         permissions.forEach(permission => {
-            if(permissionsEnabled.indexOf(permission) === -1){
+            if (permissionsEnabled.indexOf(permission) === -1) {
                 throw new Error("Insufficient permissions");
             }
         })
@@ -40,11 +31,15 @@ class RemixDClient {
 
     call(message, send) {
         const {service, fn, args, permissions} = message;
-        this.validatePermissions(permissions);
-        const func = this.services[service][fn];
-        func(args, (error, result) => {
-            send({scope: service, fn, error, result});
-        });
+        try {
+            this.validatePermissions(permissions);
+            const func = this.services[service][fn];
+            func(args, (error, result) => {
+                send({scope: service, fn, error, result});
+            });
+        } catch (error) {
+            send({scope: service, fn, error: error.message, result: null});
+        }
     }
 }
 
