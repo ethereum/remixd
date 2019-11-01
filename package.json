@@ -12,7 +12,7 @@
     "npip": "npip",
     "install-python-deps": "npip install",
     "prepublish": "npm run install-python-deps",
-    "swf": "bin/remixd -s ./testing --remix-ide https://remix.ethereum.org --forward-commands"
+    "update-origins": "node bin/getOrigins.js"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,10 @@
   },
   "homepage": "https://github.com/ethereum/remixd#readme",
   "dependencies": {
+    "axios": "^0.19.0",
     "chokidar": "^2.0.2",
     "commander": "^2.9.0",
+    "cors": "2.8.5",
     "dotenv": "^8.2.0",
     "express": "4.17.1",
     "express-ws": "^4.0.0",
@@ -42,7 +44,6 @@
     "nopy": "^0.2.6",
     "stdout": "0.0.3",
     "watch": "^1.0.2",
-    "cors": "2.8.5",
     "ws": "^7.2.0"
   },
   "python": {

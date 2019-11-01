@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-let origins = require('../public/origins').origins;
+let origins = require('../public/origins.json');
 
 //Commander part
 const program = require('commander');
@@ -16,7 +16,6 @@ program
         console.log('\nExample:\n\n    remixd -s ./ --remix-ide http://localhost:8080\n')
     }).parse(process.argv)
 
-
 if (program.sharedFolder) {
     process.env.SHARED_FOLDER = program.sharedFolder;
 }
@@ -25,11 +24,11 @@ if (program.readOnly) {
     process.env.READ_ONLY = true;
 }
 
-if(program.remixIde){
+if (program.remixIde) {
     origins.push(program.remixIde);
 }
 
-if(program.permissions){
+if (program.permissions) {
     process.env.PERMISSIONS = program.permissions;
 }
 
