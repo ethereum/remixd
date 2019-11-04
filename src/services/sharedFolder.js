@@ -1,16 +1,16 @@
-const utils = require('../utils');
-const isbinaryfile = require('isbinaryfile');
-const fs = require('fs-extra');
-const chokidar = require('chokidar');
+const utils = require('../utils')
+const isbinaryfile = require('isbinaryfile')
+const fs = require('fs-extra')
+const chokidar = require('chokidar')
 
 module.exports = {
   trackDownStreamUpdate: {},
   websocket: null,
   alreadyNotified: {},
 
-  init: function(websocket) {
+  init: function (websocket) {
     this.websocket = websocket
-    this.setupNotifications(this.currentSharedFolder);
+    this.setupNotifications(this.currentSharedFolder)
     if (this.websocket.connection) this.websocket.send(message('rootFolderChanged', {}))
   },
 
@@ -56,11 +56,11 @@ module.exports = {
     isbinaryfile(path, (error, isBinary) => {
       if (error) console.log(error)
       if (isBinary) {
-        cb(null, {content: '<binary content not displayed>', readonly: true})
+        cb(null, { content: '<binary content not displayed>', readonly: true })
       } else {
         fs.readFile(path, 'utf8', (error, data) => {
           if (error) console.log(error)
-          cb(error, {content: data, readonly: false})
+          cb(error, { content: data, readonly: false })
         })
       }
     })
@@ -122,8 +122,8 @@ module.exports = {
 
   setupNotifications: function (path) {
     if (!isRealPath(path)) return
-    var watcher = chokidar.watch(path, {depth: 0, ignorePermissionErrors: true})
-    console.log(new Date()  + ' Setup notifications for ' + path)
+    var watcher = chokidar.watch(path, { depth: 0, ignorePermissionErrors: true })
+    console.log(new Date() + ' Setup notifications for ' + path)
     /* we can't listen on created file / folder
     watcher.on('add', (f, stat) => {
       isbinaryfile(f, (error, isBinary) => {
@@ -164,5 +164,5 @@ function isRealPath (path, cb) {
 }
 
 function message (name, value) {
-  return JSON.stringify({type: 'notification', scope: 'sharedfolder', name: name, value: value})
+  return JSON.stringify({ type: 'notification', scope: 'sharedfolder', name: name, value: value })
 }

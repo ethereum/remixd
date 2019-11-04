@@ -7,7 +7,7 @@
     "remixd": "./bin/remixd"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "standard",
     "start": "npm run update-origins && ./bin/remixd",
     "start-offline": "./bin/remixd",
     "npip": "npip",
@@ -51,5 +51,8 @@
     "dependencies": {
       "vyper": ">=0.1.0b3"
     }
+  },
+  "devDependencies": {
+    "standard": "^8.6.0"
   }
 }
