@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-let origins = require('../public/origins.json');
+const origins = require('../public/origins.json');
 
 //Commander part
 const program = require('commander');
