@@ -47,3 +47,17 @@ Furthermore :
  - If a folder does not contain any file, the folder will not be displayed in the explorer (that might change).
  - Symbolic links are not forwarded to Remix IDE.
  
+
+ ---------------------------------------------------------------------------------------------------------------------------------------
+## How to run
+Create testing or some other folder
+bin/remixd -s ./testing --remix-ide https://blockchain-it.hr --forward-commands --permissions READ,WRITE
+
+
+Open https://remix.ethereum.org/ (or other whitelisted origin) -> inspect -> console 
+Inside a console type:
+`ws=new WebSocket("ws://localhost:65520", "echo-protocol")`
+`ws.onmessage = e => {
+   console.log('Message from server:', event.data)
+ }`
+ `ws.send('{"id":1,"service":"commandForwarder","fn":"forward","permissions":["READ","WRITE"],"args":{"cmd":"git status"}}');`

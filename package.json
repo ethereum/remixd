@@ -8,10 +8,12 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./bin/remixd",
+    "start": "npm run update-origins && ./bin/remixd",
+    "start-offline": "./bin/remixd",
     "npip": "npip",
     "install-python-deps": "npip install",
-    "prepublish": "npm run install-python-deps"
+    "prepublish": "npm run install-python-deps",
+    "update-origins": "node bin/getOrigins.js"
   },
   "repository": {
     "type": "git",
@@ -32,14 +34,17 @@
   "dependencies": {
     "chokidar": "^2.0.2",
     "commander": "^2.9.0",
+    "cors": "2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "4.17.1",
+    "express-ws": "^4.0.0",
     "fs-extra": "^3.0.1",
     "isbinaryfile": "^3.0.2",
     "lerna": "^2.9.0",
     "nopy": "^0.2.6",
-    "serve": "7.0.0",
     "stdout": "0.0.3",
     "watch": "^1.0.2",
-    "websocket": "^1.0.24"
+    "ws": "^7.2.0"
   },
   "python": {
     "execPath": "python3",

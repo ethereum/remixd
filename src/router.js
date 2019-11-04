@@ -1,51 +1,46 @@
-var Websocket = require('./websocket')
+const remixDClient = require('./remixDClient');
+const bodyParser = require('body-parser');
+const app = require('express')();
+const WebSocket = require('ws');
 
 class Router {
-  constructor (port, service, opt, initCallback) {
-    this.opt = opt
-    this.port = port
-    this.service = service
-    this.initCallback = initCallback
-  }
-  start () {
-    var websocket = new Websocket(this.port, this.opt)
-    this.websocket = websocket
-    this.websocket.start((message) => {
-      this.call(message.id, message.service, message.fn, message.args)
-    })
-    if (this.initCallback) this.initCallback(this.websocket)
-    return function () {
-      if (websocket) {
-        websocket.close()
-      }
-    }
-  }
 
-  call (callid, name, fn, args) {
-    try {
-      this.service[fn](args, (error, data) => {
-        var response = {
-          id: callid,
-          type: 'reply',
-          scope: name,
-          result: data,
-          error: error
+    constructor() {
+        // Middleware
+        app.use(bodyParser.urlencoded({extended: true}));
+        app.use(bodyParser.json());
+        process.env.CLIENT = remixDClient;
+
+        const ws = new WebSocket.Server({port: 65520});
+        console.log("Server running on port 65520");
+        this.ws = ws;
+    }
+
+    //Origin has to be in the list of whitelisted!
+    static validateRequest(ws, request) {
+        if (process.env.ORIGINS.indexOf(request.headers.origin) === -1) {
+            throw new Error("CORS invalid!");
         }
-        this.websocket.send(JSON.stringify(response))
-      })
-    } catch (e) {
-      var msg = 'Unexpected Error ' + e.message
-      console.log('\x1b[31m%s\x1b[0m', '[ERR] ' + msg)
-      if (this.websocket) {
-        this.websocket.send(JSON.stringify({
-          id: callid,
-          type: 'reply',
-          scope: name,
-          error: msg
-        }))
-      }
     }
-  }
-}
 
-module.exports = Router
+}
+const router = new Router();
+
+router.ws.on('connection', function connection(ws, request, client) {
+    try {
+        Router.validateRequest(ws, request);
+        ws.on('message', (message) => {
+            console.log(`Received message ${message} from user ${client}`);
+            let data = JSON.parse(message);
+            remixDClient.call(data, (result) => {
+                console.log(JSON.stringify(result));
+                ws.send(JSON.stringify(result));
+            });
+        });
+    } catch (err) {
+        //TODO: Add global error handler here!
+        ws.send(JSON.stringify(err.message));
+    }
+});
+
+module.exports = Router;

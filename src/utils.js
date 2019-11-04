@@ -4,10 +4,22 @@ var isbinaryfile = require('isbinaryfile')
 var pathModule = require('path')
 
 module.exports = {
-  absolutePath: absolutePath,
-  relativePath: relativePath,
-  walkSync: walkSync,
-  resolveDirectory: resolveDirectory
+    absolutePath: absolutePath,
+    relativePath: relativePath,
+    walkSync: walkSync,
+    resolveDirectory: resolveDirectory,
+    validateRequest
+};
+
+/**
+ * Origin has to be in the list of whitelisted!
+ * @param ws
+ * @param request
+ */
+function validateRequest(ws, request) {
+    if (process.env.ORIGINS.indexOf(request.headers.origin) === -1) {
+        throw new Error("CORS invalid!");
+    }
 }
 
 /**
@@ -17,12 +29,12 @@ module.exports = {
  * @param {String} sharedFolder - absolute shared path. platform dependent representation.
  * @return {String} platform dependent absolute path (/home/user1/.../... for unix, c:\user\...\... for windows)
  */
-function absolutePath (path, sharedFolder) {
-  path = normalizePath(path)
-  if (path.indexOf(sharedFolder) !== 0) {
-    path = pathModule.resolve(sharedFolder, path)
-  }
-  return path
+function absolutePath(path, sharedFolder) {
+    path = normalizePath(path)
+    if (path.indexOf(sharedFolder) !== 0) {
+        path = pathModule.resolve(sharedFolder, path)
+    }
+    return path
 }
 
 /**
@@ -32,44 +44,44 @@ function absolutePath (path, sharedFolder) {
  * @param {String} sharedFolder - absolute shared path. platform dependent representation
  * @return {String} relative path (Unix style which is the one used by Remix IDE)
  */
-function relativePath (path, sharedFolder) {
-  var relative = pathModule.relative(sharedFolder, path)
-  return normalizePath(relative)
+function relativePath(path, sharedFolder) {
+    var relative = pathModule.relative(sharedFolder, path)
+    return normalizePath(relative)
 }
 
-function normalizePath (path) {
-  if (process.platform === 'win32') {
-    return path.replace(/\\/g, '/')
-  }
-  return path
-}
-
-function walkSync (dir, filelist, sharedFolder) {
-  var files = fs.readdirSync(dir)
-  filelist = filelist || {}
-  files.forEach(function (file) {
-    var subElement = path.join(dir, file)
-    if (!fs.lstatSync(subElement).isSymbolicLink()) {
-      if (fs.statSync(subElement).isDirectory()) {
-        filelist = walkSync(subElement, filelist, sharedFolder)
-      } else {
-        var relative = relativePath(subElement, sharedFolder)
-        filelist[relative] = isbinaryfile.sync(subElement)
-      }
+function normalizePath(path) {
+    if (process.platform === 'win32') {
+        return path.replace(/\\/g, '/')
     }
-  })
-  return filelist
+    return path
 }
 
-function resolveDirectory (dir, sharedFolder) {
-  var ret = {}
-  var files = fs.readdirSync(dir)
-  files.forEach(function (file) {
-    var subElement = path.join(dir, file)
-    if (!fs.lstatSync(subElement).isSymbolicLink()) {
-      var relative = relativePath(subElement, sharedFolder)
-      ret[relative] = { isDirectory: fs.statSync(subElement).isDirectory() }
-    }
-  })
-  return ret
+function walkSync(dir, filelist, sharedFolder) {
+    var files = fs.readdirSync(dir)
+    filelist = filelist || {}
+    files.forEach(function (file) {
+        var subElement = path.join(dir, file)
+        if (!fs.lstatSync(subElement).isSymbolicLink()) {
+            if (fs.statSync(subElement).isDirectory()) {
+                filelist = walkSync(subElement, filelist, sharedFolder)
+            } else {
+                var relative = relativePath(subElement, sharedFolder)
+                filelist[relative] = isbinaryfile.sync(subElement)
+            }
+        }
+    })
+    return filelist
+}
+
+function resolveDirectory(dir, sharedFolder) {
+    var ret = {}
+    var files = fs.readdirSync(dir)
+    files.forEach(function (file) {
+        var subElement = path.join(dir, file)
+        if (!fs.lstatSync(subElement).isSymbolicLink()) {
+            var relative = relativePath(subElement, sharedFolder)
+            ret[relative] = {isDirectory: fs.statSync(subElement).isDirectory()}
+        }
+    })
+    return ret
 }

@@ -1,21 +1,25 @@
-var utils = require('../utils')
-var isbinaryfile = require('isbinaryfile')
-var fs = require('fs-extra')
-var chokidar = require('chokidar')
+const utils = require('../utils');
+const isbinaryfile = require('isbinaryfile');
+const fs = require('fs-extra');
+const chokidar = require('chokidar');
 
 module.exports = {
   trackDownStreamUpdate: {},
   websocket: null,
   alreadyNotified: {},
 
-  setWebSocket: function (websocket) {
+  init: function(websocket) {
     this.websocket = websocket
+    this.setupNotifications(this.currentSharedFolder);
+    if (this.websocket.connection) this.websocket.send(message('rootFolderChanged', {}))
   },
 
   sharedFolder: function (currentSharedFolder, readOnly) {
     this.currentSharedFolder = currentSharedFolder
     this.readOnly = readOnly
-    if (this.websocket.connection) this.websocket.send(message('rootFolderChanged', {}))
+    if (this.websocket) {
+      this.websocket.send(message('rootFolderChanged', {}))
+    }
   },
 
   list: function (args, cb) {
@@ -119,7 +123,7 @@ module.exports = {
   setupNotifications: function (path) {
     if (!isRealPath(path)) return
     var watcher = chokidar.watch(path, {depth: 0, ignorePermissionErrors: true})
-    console.log('setup notifications for ' + path)
+    console.log(new Date()  + ' Setup notifications for ' + path)
     /* we can't listen on created file / folder
     watcher.on('add', (f, stat) => {
       isbinaryfile(f, (error, isBinary) => {
