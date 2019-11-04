@@ -31,7 +31,7 @@ class RemixDClient {
   call (message, send) {
     const { service, fn, args, permissions } = message
     try {
-      this.validatePermissions(permissions)
+      //this.validatePermissions(permissions) //For checking and requesting needed permissions from users
       const func = this.services[service][fn]
       func(args, (error, result) => {
         send({ scope: service, fn, error, result })
