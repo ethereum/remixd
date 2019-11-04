@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/ethereum/remixd#readme",
   "dependencies": {
-    "axios": "^0.19.0",
     "chokidar": "^2.0.2",
     "commander": "^2.9.0",
     "cors": "2.8.5",
