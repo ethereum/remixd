@@ -44,7 +44,8 @@
     "nopy": "^0.2.6",
     "stdout": "0.0.3",
     "watch": "^1.0.2",
-    "ws": "^7.2.0"
+    "ws": "^7.2.0",
+    "@remixproject/plugin-ws": "^0.0.3"
   },
   "python": {
     "execPath": "python3",
