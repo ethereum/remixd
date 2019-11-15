@@ -9,7 +9,7 @@
   "scripts": {
     "test": "standard",
     "start": "npm run update-origins && ./bin/remixd",
-    "start-offline": "./bin/remixd -s ./testing --remix-ide http://localhost:8080 --forward-commands --permissions READ,WRITE",
+    "start-locally": "./bin/remixd -s ./testing --remix-ide http://localhost:8080 --forward-commands",
     "npip": "npip",
     "install-python-deps": "npip install",
     "prepublish": "npm run install-python-deps",

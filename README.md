@@ -51,7 +51,7 @@ Furthermore :
  ---------------------------------------------------------------------------------------------------------------------------------------
 ## How to run
 Create testing or some other folder
-bin/remixd -s ./testing --remix-ide http://http://localhost:8080/ --forward-commands --permissions READ,WRITE
+bin/remixd -s ./testing --remix-ide http://localhost:8080/ --forward-commands
 
 Open https://remix.ethereum.org/ (or other whitelisted origin) 
 Right click on inspect 
@@ -70,8 +70,8 @@ ws.onmessage = e => {
 ws.send('{"id":1,"name":"git","key":"init");
 ws.send('{"id":1,"name":"git","key":"clone","payload":"git@github.com:edisinovcic/remixd-test-repository.git"}');
 ws.send('{"id":1,"name":"git","key":"add","payload":"."}');
-ws.send('{"id":1,"name":"git","key":"commit","payload":"-m \'First commit\'}');
+ws.send('{"id":1,"name":"git","key":"commit","payload":"-m \'Initial commit\'"}');
 ws.send('{"id":1,"name":"git","key":"remote","payload":"add origin git@github.com:edisinovcic/remixd-test-repository.git"}');
-ws.send('{"id":1,"name":"git","key":"push","payload":"-u origin master"}'); 
+ws.send('{"id":1,"name":"git","key":"push","payload":"origin feature-commandforwarder"}'); 
 
 Or any other git command you want to run
