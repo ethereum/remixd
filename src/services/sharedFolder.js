@@ -1,4 +1,4 @@
-const utils = require('../utils')
+const utils = require('../utils/utils')
 const isbinaryfile = require('isbinaryfile')
 const fs = require('fs-extra')
 const chokidar = require('chokidar')
@@ -56,11 +56,11 @@ module.exports = {
     isbinaryfile(path, (error, isBinary) => {
       if (error) console.log(error)
       if (isBinary) {
-        cb(null, { content: '<binary content not displayed>', readonly: true })
+        cb(null, {content: '<binary content not displayed>', readonly: true})
       } else {
         fs.readFile(path, 'utf8', (error, data) => {
           if (error) console.log(error)
-          cb(error, { content: data, readonly: false })
+          cb(error, {content: data, readonly: false})
         })
       }
     })
@@ -120,9 +120,15 @@ module.exports = {
     })
   },
 
+  createFolder (path) {
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path, {recursive: true})
+    }
+  },
+
   setupNotifications: function (path) {
     if (!isRealPath(path)) return
-    var watcher = chokidar.watch(path, { depth: 0, ignorePermissionErrors: true })
+    var watcher = chokidar.watch(path, {depth: 0, ignorePermissionErrors: true})
     console.log(new Date() + ' Setup notifications for ' + path)
     /* we can't listen on created file / folder
     watcher.on('add', (f, stat) => {
@@ -144,10 +150,16 @@ module.exports = {
       if (this.websocket.connection) this.websocket.send(message('changed', utils.relativePath(f, this.currentSharedFolder)))
     })
     watcher.on('unlink', (f) => {
-      if (this.websocket.connection) this.websocket.send(message('removed', { path: utils.relativePath(f, this.currentSharedFolder), isFolder: false }))
+      if (this.websocket.connection) this.websocket.send(message('removed', {
+        path: utils.relativePath(f, this.currentSharedFolder),
+        isFolder: false
+      }))
     })
     watcher.on('unlinkDir', (f) => {
-      if (this.websocket.connection) this.websocket.send(message('removed', { path: utils.relativePath(f, this.currentSharedFolder), isFolder: true }))
+      if (this.websocket.connection) this.websocket.send(message('removed', {
+        path: utils.relativePath(f, this.currentSharedFolder),
+        isFolder: true
+      }))
     })
   }
 }
@@ -164,5 +176,5 @@ function isRealPath (path, cb) {
 }
 
 function message (name, value) {
-  return JSON.stringify({ type: 'notification', scope: 'sharedfolder', name: name, value: value })
+  return JSON.stringify({type: 'notification', scope: 'sharedfolder', name: name, value: value})
 }

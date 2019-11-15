@@ -10,8 +10,6 @@ module.exports = {
   resolveDirectory: resolveDirectory,
   validateRequest,
   validateCommand,
-  isRealPath,
-  message
 }
 
 /**
@@ -20,7 +18,7 @@ module.exports = {
  * @param regex
  */
 function validateCommand (cmd, regex) {
-  if (!cmd.match(regex)) { //git then space and then everything else
+  if (!RegExp(regex).test(cmd)) { //git then space and then everything else
     throw new Error('Invalid command for service!')
   }
 }
@@ -33,6 +31,24 @@ function validateRequest (request) {
   if (process.env.ORIGINS.indexOf(request.headers.origin) === -1) {
     throw new Error('CORS invalid!')
   }
+}
+
+/**
+ * Validate if user has service permissions
+ * @param permissions
+ */
+function validatePermissions (permissions) {
+  if (permissions.length === 0) {
+    return
+  }
+
+  const permissionsEnabled = process.env.PERMISSIONS.split(',')
+
+  permissions.forEach(permission => {
+    if (permissionsEnabled.indexOf(permission) === -1) {
+      throw new Error('Insufficient permissions')
+    }
+  })
 }
 
 /**
@@ -93,7 +109,7 @@ function resolveDirectory (dir, sharedFolder) {
     let subElement = path.join(dir, file)
     if (!fs.lstatSync(subElement).isSymbolicLink()) {
       let relative = relativePath(subElement, sharedFolder)
-      ret[relative] = { isDirectory: fs.statSync(subElement).isDirectory() }
+      ret[relative] = {isDirectory: fs.statSync(subElement).isDirectory()}
     }
   })
   return ret

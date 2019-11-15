@@ -2,62 +2,60 @@ const remixDClient = require('./remixDClient')
 const bodyParser = require('body-parser')
 const express = require('express')
 const app = express()
-const ws = require('express-ws')
-const WebSocket = require('ws')
+require('express-ws')(app)
 const pluginWs = require('@remixproject/plugin-ws')
+const {validateRequest} = require('./utils/utils')
+
+const socketErrorHandler = (err) => JSON.stringify({type: 'error', message: err.toString()})
 
 class Router {
   constructor () {
     // Middleware
-    app.use(bodyParser.urlencoded({ extended: true }))
+    app.use(bodyParser.urlencoded({extended: true}))
     app.use(bodyParser.json())
-    process.env.CLIENT = remixDClient
 
-    /*
-    ws(app)
-    const port = 65520;
-    app.listen(port, () => console.log(`Remixd server started on port ${port}`));
-    */
+    const port = process.env.PORT || 65520
 
-    const ws = new WebSocket.Server({ port: 65520 })
-    console.log('Server running on port 65520')
-    this.ws = ws
+    app.listen(port, () => console.log(`Server started on port ${port}`))
 
-  }
-
-  // Origin has to be in the list of whitelisted!
-  static validateRequest (ws, request) {
-    if (process.env.ORIGINS.indexOf(request.headers.origin) === -1) {
-      throw new Error('CORS invalid!')
-    }
+    this.app = app
   }
 }
+
 const router = new Router()
 
-router.app.ws('/', async(socket) => {
-  const client = pluginWs.createWebsocketClient(socket);
-  await client.onload()
-  await client.call('fileManager', 'setFile', 'browser/hello.txt', 'Hello world!')
+router.app.use(function (req, res, next) {
+  try {
+    validateRequest(req)
+  } catch (e) {
+    return res.send(JSON.stringify(e))
+  }
+  return next()
 })
 
-router.ws.on('connection', (ws, request) => {
+router.app.ws('/', async (socket) => {
   try {
-    const client = pluginWs.createWebsocketClient(ws);
-    client.onload();
-    client.call('fileManager', 'setFile', 'browser/hello.txt', 'Hello world!')
 
-    Router.validateRequest(ws, request)
-    ws.on('message', (message) => {
-      console.log(`Received message ${message} from user ${client}`)
-      const data = JSON.parse(message)
-      remixDClient.call(data, (result) => {
-        console.log(JSON.stringify(result))
-        ws.send(JSON.stringify(result))
-      })
+    /*
+    const client = pluginWs.createWebsocketClient(socket)
+    await client.onload()
+    await client.call('fileManager', 'getFile', 'browser/test.txt', 'Hello World')
+    */
+
+    socket.on('message', (message) => {
+      console.log(`Received message ${message} from user ${socket}`)
+      try {
+        const data = JSON.parse(message)
+        remixDClient.call(data, (result) => {
+          console.log(JSON.stringify(result))
+          socket.send(JSON.stringify(result))
+        })
+      } catch (err) {
+        socket.send(socketErrorHandler(err)) //Handle when invalid JSON input is send!
+      }
     })
   } catch (err) {
-    // TODO: Add global error handler here!
-    ws.send(JSON.stringify(err.message))
+    socket.send(socketErrorHandler(err))
   }
 })
 

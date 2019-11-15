@@ -2,29 +2,23 @@ const {spawn} = require('child_process')
 
 class ProcessManager {
 
-  cmd(args, callback, onclose) {
-    const options = {cwd: process.env.SHARED_FOLDER, shell: true};
-    const {cmd} = args;
-    this.spawnProcess(cmd, options, callback, onclose);
-  }
-
-  spawnProcess (cmd, options, callback, onclose) {
+  spawnProcess (cmd, options, callback) {
     const child = spawn(cmd, options)
-    let result = "";
-    let error = "";
+    let result = ''
+    let error = ''
     if (callback) {
       child.stdout.on('data', (data) => {
-        result.append(data);
+        result += data.toString()
       })
       child.stderr.on('data', (err) => {
-        error.append(err);
+        error += err.toString()
       })
-    }
-    if (onclose) {
-      child.on('close', onclose)
+      child.on('close', () => {
+        callback({type: 'response', result: result, error: error})
+      })
     }
   }
 
 }
 
-module.exports = ProcessManager;
+module.exports = ProcessManager
