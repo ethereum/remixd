@@ -72,7 +72,7 @@ ws.onmessage = e => {
   console.log('Message from server:', event.data)
 }
 
-ws.send('{"id":1,"name":"git","key":"init");
+ws.send('{"id":1,"name":"git","key":"init"}');
 
 ws.send('{"id":1,"name":"git","key":"clone","payload":"git@github.com:edisinovcic/remixd-test-repository.git"}');
 
