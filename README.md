@@ -68,10 +68,16 @@ ws.onmessage = e => {
 }
 
 ws.send('{"id":1,"name":"git","key":"init");
+
 ws.send('{"id":1,"name":"git","key":"clone","payload":"git@github.com:edisinovcic/remixd-test-repository.git"}');
+
 ws.send('{"id":1,"name":"git","key":"add","payload":"."}');
+
 ws.send('{"id":1,"name":"git","key":"commit","payload":"-m \'Initial commit\'"}');
+
 ws.send('{"id":1,"name":"git","key":"remote","payload":"add origin git@github.com:edisinovcic/remixd-test-repository.git"}');
+
 ws.send('{"id":1,"name":"git","key":"push","payload":"origin feature-commandforwarder"}'); 
+
 
 Or any other git command you want to run
