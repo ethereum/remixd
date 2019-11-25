@@ -50,11 +50,16 @@ Furthermore :
 
  ---------------------------------------------------------------------------------------------------------------------------------------
 ## How to run
+
 Create testing or some other folder
+
 bin/remixd -s ./testing --remix-ide http://localhost:8080/ --forward-commands
 
+
 Open https://remix.ethereum.org/ (or other whitelisted origin) 
+
 Right click on inspect 
+
 Go to console
 
 Inside a console type:
