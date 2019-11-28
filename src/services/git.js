@@ -1,7 +1,7 @@
 const path = require('path')
 const ProcessManager = require('../utils/processManager')
 const {validateCommand} = require('../utils/utils')
-const gitRegex = '^git\\s[^&]*$'
+const gitRegex = '^git\\s[^&|;]*$'
 
 class GitService {
 
