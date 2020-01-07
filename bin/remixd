@@ -3,6 +3,14 @@ const origins = require('../public/origins.json');
 
 //Commander part
 const program = require('commander');
+const dotenv = require('dotenv');
+const path = require('path');
+
+let options = {};
+const fullPath = path.resolve(process.cwd(), `.env`);
+console.log(fullPath);
+options.path = fullPath
+dotenv.config(options);
 
 program
     .usage('[options]')
