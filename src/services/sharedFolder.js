@@ -1,25 +1,21 @@
-const utils = require('../utils/utils')
-const isbinaryfile = require('isbinaryfile')
-const fs = require('fs-extra')
-const chokidar = require('chokidar')
+var utils = require('../utils/utils')
+var isbinaryfile = require('isbinaryfile')
+var fs = require('fs-extra')
+var chokidar = require('chokidar')
 
 module.exports = {
   trackDownStreamUpdate: {},
   websocket: null,
   alreadyNotified: {},
 
-  init: function (websocket) {
+  setWebSocket: function (websocket) {
     this.websocket = websocket
-    this.setupNotifications(this.currentSharedFolder)
-    if (this.websocket.connection) this.websocket.send(message('rootFolderChanged', {}))
   },
 
   sharedFolder: function (currentSharedFolder, readOnly) {
     this.currentSharedFolder = currentSharedFolder
     this.readOnly = readOnly
-    if (this.websocket) {
-      this.websocket.send(message('rootFolderChanged', {}))
-    }
+    if (this.websocket.connection) this.websocket.send(message('rootFolderChanged', {}))
   },
 
   list: function (args, cb) {
@@ -120,16 +116,10 @@ module.exports = {
     })
   },
 
-  createFolder (path) {
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path, {recursive: true})
-    }
-  },
-
   setupNotifications: function (path) {
     if (!isRealPath(path)) return
     var watcher = chokidar.watch(path, {depth: 0, ignorePermissionErrors: true})
-    console.log(new Date() + ' Setup notifications for ' + path)
+    console.log('setup notifications for ' + path)
     /* we can't listen on created file / folder
     watcher.on('add', (f, stat) => {
       isbinaryfile(f, (error, isBinary) => {
@@ -150,16 +140,10 @@ module.exports = {
       if (this.websocket.connection) this.websocket.send(message('changed', utils.relativePath(f, this.currentSharedFolder)))
     })
     watcher.on('unlink', (f) => {
-      if (this.websocket.connection) this.websocket.send(message('removed', {
-        path: utils.relativePath(f, this.currentSharedFolder),
-        isFolder: false
-      }))
+      if (this.websocket.connection) this.websocket.send(message('removed', { path: utils.relativePath(f, this.currentSharedFolder), isFolder: false }))
     })
     watcher.on('unlinkDir', (f) => {
-      if (this.websocket.connection) this.websocket.send(message('removed', {
-        path: utils.relativePath(f, this.currentSharedFolder),
-        isFolder: true
-      }))
+      if (this.websocket.connection) this.websocket.send(message('removed', { path: utils.relativePath(f, this.currentSharedFolder), isFolder: true }))
     })
   }
 }

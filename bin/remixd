@@ -42,6 +42,11 @@ if (program.permissions) {
     process.env.PERMISSIONS = program.permissions;
 }
 
+if(program.port) {
+
+}
+
 process.env.ORIGINS = origins;
 console.log('\x1b[33m%s\x1b[0m', '[WARN] You may now only use IDE at ' + origins + ' to connect to this instance');
+
 require('../src/router');

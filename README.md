@@ -72,9 +72,11 @@ ws.onmessage = e => {
   console.log('Message from server:', event.data)
 }
 
-ws.send('{"id":1,"name":"git","key":"init"}');
+Run init if you want empty repository OR clone some repository or one listed below
 
-ws.send('{"id":1,"name":"git","key":"clone","payload":"git@github.com:edisinovcic/remixd-test-repository.git ."}');
+ws.send('{"id":1,"name":"git","key":"init"}'); //init
+
+ws.send('{"id":1,"name":"git","key":"clone","payload":"git@github.com:edisinovcic/remixd-test-repository.git ."}'); //clone
 
 ws.send('{"id":1,"name":"git","key":"add","payload":"."}');
 
@@ -83,6 +85,8 @@ ws.send('{"id":1,"name":"git","key":"commit","payload":"-m \'Initial commit\'"}'
 ws.send('{"id":1,"name":"git","key":"remote","payload":"add origin git@github.com:edisinovcic/remixd-test-repository.git"}');
 
 ws.send('{"id":1,"name":"git","key":"push","payload":"origin "}');
+
+ws.send('{"id":1,"name":"git","key":"status"}');
 
 
 Or any other git command you want to run.

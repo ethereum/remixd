@@ -13,8 +13,12 @@ class ProcessManager {
       child.stderr.on('data', (err) => {
         error += err.toString()
       })
-      child.on('close', () => {
-        callback({type: 'response', result: result, error: error})
+      child.on('close', (exitCode) => {
+        if(exitCode !== 0){
+          callback({type: 'error', result: "", error: result + error})
+        } else {
+          callback({type: 'response', result: result + error, error: ""})
+        }
       })
     }
   }
