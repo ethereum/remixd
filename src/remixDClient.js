@@ -17,10 +17,9 @@ class RemixDClient {
     try {
       const svc = this.services[name]
 
-      if (name === 'fileManager') {
+      if (name === 'sharedFolder') {
         svc[key](payload, callback)
       } else {
-        this.services["fileManager"]["createFolder"](this.sharedFolder) //Create folder if it doesn't exist
         svc.command(action, id, key, name, payload, callback)
       }
     } catch (error) {

@@ -14,10 +14,7 @@ class Router {
     app.use(bodyParser.urlencoded({extended: true}))
     app.use(bodyParser.json())
 
-    remixDClient.services['sharedfolder'].setWebSocket(webSocket)
-    remixDClient.services['sharedfolder'].setupNotifications(program.sharedFolder)
-    remixDClient.services['sharedfolder'].sharedFolder(program.sharedFolder, program.readOnly || false)
-
+    // TODO: Remove this after remix-plugin has been done
     const port = process.env.PORT || 65520
 
     app.listen(port, () => console.log(`Server started on port ${port}`))
@@ -50,6 +47,14 @@ router.app.ws('/', async (socket) => {
       console.log(`Received message ${message} from user ${socket}`)
       try {
         const data = JSON.parse(message)
+
+        // TODO: remove once remix-plugin has been implemented
+        if(process.env.SHARED_FOLDER && remixDClient.services['sharedfolder'].websocket === undefined){
+          remixDClient.services['sharedfolder'].setWebSocket(socket)
+          remixDClient.services['sharedfolder'].setupNotifications(process.env.SHARED_FOLDER)
+          remixDClient.services['sharedfolder'].sharedFolder(process.env.SHARED_FOLDER, process.env.READ_ONLY || false)
+        }
+
         remixDClient.call(data, (result) => {
           console.log(JSON.stringify(result))
           socket.send(JSON.stringify(result))
