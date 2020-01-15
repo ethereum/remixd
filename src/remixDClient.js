@@ -13,11 +13,12 @@ class RemixDClient {
   }
 
   call (message, callback) {
-    const {action, id, key, name, payload} = message
+    const {action, id, service,  key, name, payload} = message
     try {
-      const svc = this.services[name]
+      let svc = this.services[name]
 
-      if (name === 'sharedFolder') {
+      if (service === 'sharedfolder') {
+        svc = this.services[service]
         svc[key](payload, callback)
       } else {
         svc.command(action, id, key, name, payload, callback)
