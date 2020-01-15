@@ -6,8 +6,6 @@ require('express-ws')(app)
 const pluginWs = require('@remixproject/plugin-ws')
 const {validateRequest} = require('./utils/utils')
 
-const socketErrorHandler = (err) => JSON.stringify({type: 'error', message: err.toString()})
-
 class Router {
   constructor () {
     // Middleware
@@ -43,24 +41,24 @@ router.app.ws('/', async (socket) => {
     await client.call('fileManager', 'getFile', 'browser/test.txt', 'Hello World')
     */
 
-    socket.on('message', (message) => {
-      console.log(`Received message ${message} from user ${socket}`)
+    socket.on('message', (msg) => {
+      console.log(`Received message ${msg} from user ${socket}`)
       try {
-        const data = JSON.parse(message)
+        const message = JSON.parse(msg)
 
         // TODO: remove once remix-plugin has been implemented
-        if(process.env.SHARED_FOLDER && remixDClient.services['sharedfolder'].websocket === undefined){
+        if (process.env.SHARED_FOLDER && remixDClient.services['sharedfolder'].websocket === null) {
           remixDClient.services['sharedfolder'].setWebSocket(socket)
           remixDClient.services['sharedfolder'].setupNotifications(process.env.SHARED_FOLDER)
           remixDClient.services['sharedfolder'].sharedFolder(process.env.SHARED_FOLDER, process.env.READ_ONLY || false)
         }
 
-        remixDClient.call(data, (result) => {
-          console.log(JSON.stringify(result))
-          socket.send(JSON.stringify(result))
+        remixDClient.call(message, (response) => {
+          console.log(response)
+          socket.send(response)
         })
       } catch (err) {
-        socket.send(socketErrorHandler(err)) //Handle when invalid JSON input is send!
+        socket.send(err) //Handle when invalid JSON input is send!
       }
     })
   } catch (err) {

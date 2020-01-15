@@ -1,7 +1,8 @@
 const services = require('./services')
-const path = require('path');
+const path = require('path')
 
 class RemixDClient {
+
   // List of methods exposed by the client (required for error checking)
   constructor (services) {
     this.services = services || []
@@ -13,18 +14,43 @@ class RemixDClient {
   }
 
   call (message, callback) {
-    const {action, id, service,  key, name, payload} = message
+    const {action, id, service, key, fn, args, name, payload} = message
     try {
-      let svc = this.services[name]
-
+      let svc
       if (service === 'sharedfolder') {
         svc = this.services[service]
-        svc[key](payload, callback)
+        svc[fn](args, (error, data) => {
+          let response = JSON.stringify({
+            id: id,
+            type: 'reply',
+            scope: name,
+            result: data,
+            error: error
+          })
+          callback(response)
+        })
       } else {
-        svc.command(action, id, key, name, payload, callback)
+        let svc = this.services[name]
+        svc.command(action, id, key, name, payload, (error, data) => {
+          let response = JSON.stringify({
+              id: id,
+              type: 'reply',
+              scope: name,
+              result: data,
+              error: error
+            })
+          callback(response)
+        })
       }
     } catch (error) {
-      callback({scope: name, key, error: error.message, result: null})
+      //Unexpected error
+      callback(JSON.stringify({
+        id: id,
+        type: 'reply',
+        scope: name,
+        error: error
+      }))
+      //callback({scope: name, key, error: error.message, result: null})
     }
   }
 }
