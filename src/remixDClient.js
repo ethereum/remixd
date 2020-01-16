@@ -31,13 +31,14 @@ class RemixDClient {
         })
       } else {
         let svc = this.services[name]
-        svc.command(action, id, key, name, payload, (error, data) => {
+        svc.command(action, id, key, name, payload, (data, error) => {
+
           callback(JSON.stringify({
               id: id,
-              type: 'reply',
+              type: data.type,
               scope: name,
-              result: data,
-              error: error
+              result: data.result,
+              error: data.error
             }))
         })
       }
