@@ -32,6 +32,8 @@
   },
   "homepage": "https://github.com/ethereum/remixd#readme",
   "dependencies": {
+    "@remixproject/plugin-ws": "^0.0.3",
+    "boolean": "^3.0.0",
     "chokidar": "^2.0.2",
     "commander": "^2.9.0",
     "cors": "2.8.5",
@@ -43,8 +45,7 @@
     "lerna": "^2.9.0",
     "nopy": "^0.2.6",
     "stdout": "0.0.3",
-    "watch": "^1.0.2",
-    "@remixproject/plugin-ws": "^0.0.3"
+    "watch": "^1.0.2"
   },
   "python": {
     "execPath": "python3",

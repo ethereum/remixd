@@ -30,6 +30,7 @@ if (program.sharedFolder) {
     console.log('\x1b[33m%s\x1b[0m', '[WARN] Symbolic links are not forwarded to Remix IDE\n')
 }
 
+
 if (program.readOnly) {
     process.env.READ_ONLY = true;
 }
@@ -42,7 +43,7 @@ if (program.permissions) {
     process.env.PERMISSIONS = program.permissions;
 }
 
-if(program.port) {
+if (program.port) {
 
 }
 
