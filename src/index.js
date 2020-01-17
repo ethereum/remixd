@@ -2,8 +2,8 @@
 
 module.exports = {
   Router: require('./router'),
-  utils: require('./utils'),
   services: {
-    sharedFolder: require('./services/sharedFolder')
+    sharedFolder: require('./services/sharedFolder'),
+    git: require('./services/git')
   }
 }

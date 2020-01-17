@@ -1,4 +1,4 @@
-var utils = require('../utils')
+var utils = require('../utils/folders')
 var isbinaryfile = require('isbinaryfile')
 var fs = require('fs-extra')
 var chokidar = require('chokidar')

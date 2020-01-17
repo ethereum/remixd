@@ -28,7 +28,12 @@ if (program.sharedFolder) {
     servicesList['sharedfolder'].setupNotifications(program.sharedFolder)
     servicesList['sharedfolder'].sharedFolder(program.sharedFolder, program.readOnly || false)
   })
+  var gitrouter = new Router(65521, servicesList['git'], { remixIdeUrl: program.remixIde }, (webSocket) => {
+    servicesList['git'].setWebSocket(webSocket)
+    servicesList['git'].sharedFolder(program.sharedFolder, program.readOnly || false)
+  })
   killCallBack.push(sharedFolderrouter.start())
+  killCallBack.push(gitrouter.start())
 }
 
 // kill

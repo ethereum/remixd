@@ -16,8 +16,8 @@ class WebSocket {
       response.end()
     })
     var loopback = '127.0.0.1'
-    this.server.listen(this.port, loopback, function () {
-      console.log((new Date()) + ' Remixd is listening on ' + loopback + ':65520')
+    this.server.listen(this.port, loopback, () => {
+      console.log((new Date()) + ' Remixd is listening on ' + loopback + ':' + this.port)
     })
 
     this.wsServer = new WebSocketServer({
