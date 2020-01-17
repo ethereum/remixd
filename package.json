@@ -8,10 +8,11 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./bin/remixd",
+    "start": "./bin/remixd -s ./testing/ --remix-ide http://127.0.0.1:8080",
     "npip": "npip",
     "install-python-deps": "npip install",
-    "prepublish": "npm run install-python-deps"
+    "prepublish": "npm run install-python-deps",
+    "lint": "standard"
   },
   "repository": {
     "type": "git",

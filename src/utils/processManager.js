@@ -15,9 +15,9 @@ class ProcessManager {
       })
       child.on('close', (exitCode) => {
         if(exitCode !== 0){
-          callback({type: 'error', result: "", error: result + error})
+          callback(error, null)
         } else {
-          callback({type: 'response', result: result + error, error: ""})
+          callback(null, result+error)
         }
       })
     }

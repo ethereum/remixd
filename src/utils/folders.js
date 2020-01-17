@@ -7,7 +7,8 @@ module.exports = {
   absolutePath: absolutePath,
   relativePath: relativePath,
   walkSync: walkSync,
-  resolveDirectory: resolveDirectory
+  resolveDirectory: resolveDirectory,
+  validateCommand: validateCommand
 }
 
 /**
@@ -72,4 +73,15 @@ function resolveDirectory (dir, sharedFolder) {
     }
   })
   return ret
+}
+
+/**
+ * Validate that command can be run by service
+ * @param cmd
+ * @param regex
+ */
+function validateCommand (cmd, regex) {
+  if (!RegExp(regex).test(cmd)) { //git then space and then everything else
+    throw new Error('Invalid command for service!')
+  }
 }
