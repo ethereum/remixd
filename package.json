@@ -1,6 +1,7 @@
 {
   "name": "remixd",
   "version": "0.1.8-alpha.14",
+  "eslintConfig": {},
   "description": "remix server: allow accessing file system from remix.ethereum.org and start a dev environment (see help section)",
   "main": "./src/index.js",
   "bin": {
@@ -47,5 +48,8 @@
     "dependencies": {
       "vyper": ">=0.1.0b3"
     }
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }
