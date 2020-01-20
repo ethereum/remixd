@@ -13,7 +13,8 @@
     "npip": "npip",
     "install-python-deps": "npip install",
     "prepublish": "npm run install-python-deps",
-    "lint": "standard"
+    "lint:fix": "eslint . --fix",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
