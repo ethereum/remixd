@@ -13,8 +13,6 @@
     "npip": "npip",
     "install-python-deps": "npip install",
     "prepublish": "npm run install-python-deps",
-    "lint:fix": "eslint . --fix",
-    "lint": "eslint .",
     "lint:standard": "./node_modules/.bin/standard"
   },
   "repository": {
@@ -51,8 +49,5 @@
     "dependencies": {
       "vyper": ">=0.1.0b3"
     }
-  },
-  "devDependencies": {
-    "eslint": "^6.8.0"
   }
 }
