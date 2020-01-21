@@ -12,7 +12,7 @@
     "npip": "npip",
     "install-python-deps": "npip install",
     "prepublish": "npm run install-python-deps",
-    "lint:standard": "./node_modules/.bin/standard"
+    "lint:standard": "./node_modules/.bin/standard --fix"
   },
   "repository": {
     "type": "git",

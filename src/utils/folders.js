@@ -82,6 +82,6 @@ function resolveDirectory (dir, sharedFolder) {
  */
 function validateCommand (cmd, regex, callback) {
   if (!RegExp(regex).test(cmd)) { // git then space and then everything else
-    callback('Invalid command for service!', null)
+    throw new Error('Invalid command for service!')
   }
 }
