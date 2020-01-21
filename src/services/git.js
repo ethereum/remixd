@@ -28,7 +28,7 @@ class GitService {
      * @param callback
      */
   command (args, callback) {
-    validateCommand(args.script, gitRegex)
+    validateCommand(args.script, gitRegex, callback)
     const options = { cwd: this.currentSharedFolder, shell: true }
     this.processManager.spawnProcess(args.script, options, callback)
   }
