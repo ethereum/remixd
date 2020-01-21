@@ -1,14 +1,14 @@
 var Websocket = require('./websocket')
 
 class Router {
-  constructor(port, service, opt, initCallback) {
+  constructor (port, service, opt, initCallback) {
     this.opt = opt
     this.port = port
     this.service = service
     this.initCallback = initCallback
   }
 
-  start() {
+  start () {
     var websocket = new Websocket(this.port, this.opt)
     this.websocket = websocket
     this.websocket.start((message) => {
@@ -22,10 +22,9 @@ class Router {
     }
   }
 
-  call(callid, name, fn, args) {
+  call (callid, name, fn, args) {
     try {
       this.service[fn](args, (error, data) => {
-
         this.websocket.send(JSON.stringify({
           id: callid,
           type: 'reply',

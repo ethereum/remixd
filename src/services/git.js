@@ -1,20 +1,19 @@
 const ProcessManager = require('../utils/processManager')
-const {validateCommand} = require('../utils/folders')
+const { validateCommand } = require('../utils/folders')
 const gitRegex = '^git\\s[^&|;]*$'
 
 class GitService {
-
-  constructor() {
+  constructor () {
     this.processManager = new ProcessManager()
     this.websocket = null
     this.currentSharedFolder = null
   }
 
-  setWebSocket(websocket) {
+  setWebSocket (websocket) {
     this.websocket = websocket
   }
 
-  sharedFolder(currentSharedFolder, readOnly) {
+  sharedFolder (currentSharedFolder, readOnly) {
     this.currentSharedFolder = currentSharedFolder
     this.readOnly = readOnly
   }
@@ -28,12 +27,11 @@ class GitService {
      * @param payload
      * @param callback
      */
-  command(args, callback) {
+  command (args, callback) {
     validateCommand(args.script, gitRegex)
-    const options = {cwd: this.currentSharedFolder, shell: true}
+    const options = { cwd: this.currentSharedFolder, shell: true }
     this.processManager.spawnProcess(args.script, options, callback)
   }
-
 }
 
 const gitService = new GitService()
