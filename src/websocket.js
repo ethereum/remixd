@@ -44,7 +44,11 @@ class WebSocket {
       console.log((new Date()) + ' Connection accepted.')
       this.connection.on('message', (message) => {
         if (message.type === 'utf8') {
-          callback(JSON.parse(message.utf8Data))
+          try{
+            callback(JSON.parse(message.utf8Data))
+          } catch (e) {
+            console.log("Error: invalid object")
+          }
         }
       })
       this.connection.on('close', (reasonCode, description) => {
