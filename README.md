@@ -47,3 +47,35 @@ Furthermore :
  - If a folder does not contain any file, the folder will not be displayed in the explorer (that might change).
  - Symbolic links are not forwarded to Remix IDE.
  
+
+ ---------------------------------------------------------------------------------------------------------------------------------------
+## How to run git service
+
+ - Create testing or some other folder
+
+ - `bin/remixd -s ./testing --remix-ide http://remix.ethereum.org/`
+
+ - Open https://remix.ethereum.org/
+
+ - Right click on inspect 
+
+ - Go to console
+
+ - Inside a console type:
+
+    - Open new WebSocket connection for git service:
+        
+       - `ws=new WebSocket("ws://localhost:65521", "echo-protocol")`
+    - Get response back in console:
+       - `ws.onmessage = e => {console.log('Message from server:', event.data)}`
+
+    - Run init if you want empty repository OR clone some repository or one listed below
+    
+    - git init:
+      - `ws.send('{"id":1, "fn": "command", "args":{"script":"git init"}}');` 
+    - git status:
+      - `ws.send('{"id":1, "fn": "command", "args":{"script":"git status"}}');` 
+    - git clone:
+      - `ws.send('{"id":1, "fn": "command", "args":{"script":"git clone git@github.com:ethereum/remixd.git"}}');` 
+
+Or any other git command you want to run in the same format as above.
