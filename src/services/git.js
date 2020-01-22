@@ -33,7 +33,7 @@ class GitService {
       const options = { cwd: this.currentSharedFolder, shell: true }
       this.processManager.spawnProcess(args.script, options, callback)
     } catch (e) {
-      callback(e, null)
+      callback(e.message, null)
     }
   }
 }
