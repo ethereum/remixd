@@ -47,7 +47,7 @@ class WebSocket {
           try{
             callback(JSON.parse(message.utf8Data))
           } catch (e) {
-            console.log("Error: invalid object")
+            console.log(e.message)
           }
         }
       })
