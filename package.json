@@ -40,7 +40,8 @@
     "serve": "7.0.0",
     "stdout": "0.0.3",
     "watch": "^1.0.2",
-    "websocket": "^1.0.24"
+    "websocket": "^1.0.24",
+    "standard": "14.3.1"
   },
   "python": {
     "execPath": "python3",
