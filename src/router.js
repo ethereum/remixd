@@ -7,6 +7,7 @@ class Router {
     this.service = service
     this.initCallback = initCallback
   }
+
   start () {
     var websocket = new Websocket(this.port, this.opt)
     this.websocket = websocket
@@ -24,14 +25,13 @@ class Router {
   call (callid, name, fn, args) {
     try {
       this.service[fn](args, (error, data) => {
-        var response = {
+        this.websocket.send(JSON.stringify({
           id: callid,
           type: 'reply',
           scope: name,
           result: data,
           error: error
-        }
-        this.websocket.send(JSON.stringify(response))
+        }))
       })
     } catch (e) {
       var msg = 'Unexpected Error ' + e.message

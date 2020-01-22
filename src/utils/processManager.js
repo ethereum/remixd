@@ -1,7 +1,6 @@
-const {spawn} = require('child_process')
+const { spawn } = require('child_process')
 
 class ProcessManager {
-
   spawnProcess (cmd, options, callback) {
     const child = spawn(cmd, options)
     let result = ''
@@ -14,15 +13,14 @@ class ProcessManager {
         error += err.toString()
       })
       child.on('close', (exitCode) => {
-        if(exitCode !== 0){
-          callback({type: 'error', result: "", error: result + error})
+        if (exitCode !== 0) {
+          callback(error, null)
         } else {
-          callback({type: 'response', result: result + error, error: ""})
+          callback(null, result + error)
         }
       })
     }
   }
-
 }
 
 module.exports = ProcessManager

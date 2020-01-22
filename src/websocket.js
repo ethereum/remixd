@@ -24,7 +24,7 @@ class WebSocket {
       httpServer: this.server,
       autoAcceptConnections: false,
       maxReceivedFrameSize: 131072,
-      maxReceivedMessageSize: 10 * 1024 * 1024,
+      maxReceivedMessageSize: 10 * 1024 * 1024
     })
 
     this.wsServer.on('request', (request) => {
@@ -44,7 +44,11 @@ class WebSocket {
       console.log((new Date()) + ' Connection accepted.')
       this.connection.on('message', (message) => {
         if (message.type === 'utf8') {
-          callback(JSON.parse(message.utf8Data))
+          try{
+            callback(JSON.parse(message.utf8Data))
+          } catch (e) {
+            console.log(e.message)
+          }
         }
       })
       this.connection.on('close', (reasonCode, description) => {
