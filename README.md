@@ -1,4 +1,4 @@
-**The project code base has been moved to https://github.com/ethereum/remix-project**
+**The project code base has been moved to [remix-project](https://github.com/ethereum/remix-project/tree/master/libs/remixd)**
 
 `remixd` is a tool that intend to be used with [Remix IDE](http://github.com/ethereum/browser-solidity) (aka. Browser-Solidity). It allows a websocket connection between
 `Remix IDE` (web application) and the local computer.
